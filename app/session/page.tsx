@@ -55,7 +55,12 @@ export default function SessionPage() {
     setStartTimestamp(Date.now())
     setIsSessionActive(true)
     setSessionDuration("00:00:00")
-  }, [])
+    // Store session info and navigate to token issuance
+    sessionStorage.setItem("dls_session_active", "true")
+    sessionStorage.setItem("dls_session_start", timeStr)
+    sessionStorage.setItem("dls_session_start_ts", String(Date.now()))
+    router.push("/token-issuance")
+  }, [router])
 
   const handleCloseSession = useCallback(() => {
     setIsSessionActive(false)
