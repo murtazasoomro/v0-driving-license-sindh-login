@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Eye, EyeOff, LogIn } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,11 +10,19 @@ import { Label } from "@/components/ui/label"
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [username, setUsername] = useState("")
+  const router = useRouter()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    setTimeout(() => setIsLoading(false), 2000)
+    // Simulate login, then redirect to session page
+    setTimeout(() => {
+      // Store user info in sessionStorage for the session page
+      sessionStorage.setItem("dls_user", username || "Officer")
+      sessionStorage.setItem("dls_authenticated", "true")
+      router.push("/session")
+    }, 1500)
   }
 
   return (
@@ -26,6 +35,8 @@ export function LoginForm() {
           id="username"
           type="text"
           placeholder="Enter your CNIC or username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           required
           className="h-11 rounded-lg border-border bg-secondary/50 px-4 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary"
         />
