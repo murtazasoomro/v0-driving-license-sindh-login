@@ -1,22 +1,42 @@
 "use client"
 
 import { useState } from "react"
-import { CreditCard, BookOpen, Ticket } from "lucide-react"
+import { CreditCard, BookOpen, Ticket, User, Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 const SERVICES = [
-  { id: "new-license", label: "New License", description: "First time license issuance" },
-  { id: "renewal", label: "Renewal", description: "Renew existing license" },
-  { id: "duplicate", label: "Duplicate", description: "Lost or damaged license" },
-  { id: "international", label: "International DL", description: "International driving permit" },
-  { id: "learner", label: "Learner Permit", description: "Learner driving permit" },
-  { id: "endorsement", label: "Endorsement", description: "Add vehicle category" },
+  { id: "learner", label: "Learner", description: "Learner driving permit" },
+  { id: "permanent", label: "Permanent", description: "Permanent driving license" },
+  { id: "international", label: "International", description: "International driving permit" },
+]
+
+const TOKEN_TYPES = [
+  {
+    id: "normal",
+    typeNumber: 1,
+    label: "Normal",
+    description: "Regular queue token",
+    icon: User,
+  },
+  {
+    id: "fast-track",
+    typeNumber: 2,
+    label: "Fast Track",
+    description: "Senior citizens priority",
+    icon: Zap,
+  },
 ]
 
 interface TokenIssuanceFormProps {
-  onIssueToken: (docType: "cnic" | "passport", docNumber: string, service: string) => void
+  onIssueToken: (
+    docType: "cnic" | "passport",
+    docNumber: string,
+    service: string,
+    tokenType: string,
+    tokenTypeNumber: number
+  ) => void
   isIssuing: boolean
 }
 
@@ -24,6 +44,7 @@ export function TokenIssuanceForm({ onIssueToken, isIssuing }: TokenIssuanceForm
   const [docType, setDocType] = useState<"cnic" | "passport">("cnic")
   const [docNumber, setDocNumber] = useState("")
   const [selectedService, setSelectedService] = useState("")
+  const [selectedTokenType, setSelectedTokenType] = useState("")
 
   const formatCNIC = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 13)
@@ -43,22 +64,29 @@ export function TokenIssuanceForm({ onIssueToken, isIssuing }: TokenIssuanceForm
   const isCnicValid = docType === "cnic" && docNumber.replace(/\D/g, "").length === 13
   const isPassportValid = docType === "passport" && docNumber.trim().length >= 6
   const isDocValid = isCnicValid || isPassportValid
-  const canSubmit = isDocValid && selectedService && !isIssuing
+  const canSubmit = isDocValid && selectedService && selectedTokenType && !isIssuing
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (canSubmit) {
-      onIssueToken(docType, docNumber, selectedService)
+      const tokenTypeDef = TOKEN_TYPES.find((t) => t.id === selectedTokenType)
+      onIssueToken(
+        docType,
+        docNumber,
+        selectedService,
+        selectedTokenType,
+        tokenTypeDef?.typeNumber || 1
+      )
     }
   }
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-      {/* Document Type & Number Card */}
+      {/* Document Type & Number */}
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <h2 className="mb-1 text-lg font-bold text-foreground">Token Issuance</h2>
         <p className="mb-5 text-sm text-muted-foreground">
-          Enter applicant document number and select service to issue a token.
+          Enter document number, select license type and token type.
         </p>
 
         {/* Document Type Toggle */}
@@ -124,35 +152,102 @@ export function TokenIssuanceForm({ onIssueToken, isIssuing }: TokenIssuanceForm
         </div>
       </div>
 
-      {/* Service Selection Card */}
+      {/* License Type Selection */}
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-        <h2 className="mb-1 text-lg font-bold text-foreground">Select Service</h2>
+        <h2 className="mb-1 text-lg font-bold text-foreground">License Type</h2>
         <p className="mb-5 text-sm text-muted-foreground">
-          Choose the type of license service for this token.
+          Select the license type for this token.
         </p>
 
-        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           {SERVICES.map((service) => (
             <button
               key={service.id}
               type="button"
               onClick={() => setSelectedService(service.id)}
-              className={`flex flex-col items-start rounded-lg border px-4 py-3.5 text-left transition-all ${
+              className={`flex flex-col items-center rounded-lg border px-4 py-4 text-center transition-all ${
                 selectedService === service.id
-                  ? "border-primary bg-primary/5 ring-1 ring-primary"
+                  ? "border-primary bg-primary/5 ring-2 ring-primary"
                   : "border-border bg-secondary/30 hover:border-primary/40 hover:bg-secondary/60"
               }`}
             >
               <span
-                className={`text-sm font-semibold ${
+                className={`text-base font-bold ${
                   selectedService === service.id ? "text-primary" : "text-foreground"
                 }`}
               >
                 {service.label}
               </span>
-              <span className="text-xs text-muted-foreground">{service.description}</span>
+              <span className="mt-0.5 text-xs text-muted-foreground">{service.description}</span>
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Token Type Selection */}
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <h2 className="mb-1 text-lg font-bold text-foreground">Token Type</h2>
+        <p className="mb-5 text-sm text-muted-foreground">
+          Select Normal or Fast Track (senior citizens) token.
+        </p>
+
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {TOKEN_TYPES.map((type) => {
+            const Icon = type.icon
+            return (
+              <button
+                key={type.id}
+                type="button"
+                onClick={() => setSelectedTokenType(type.id)}
+                className={`flex items-center gap-4 rounded-lg border px-5 py-4 text-left transition-all ${
+                  selectedTokenType === type.id
+                    ? type.id === "fast-track"
+                      ? "border-accent bg-accent/5 ring-2 ring-accent"
+                      : "border-primary bg-primary/5 ring-2 ring-primary"
+                    : "border-border bg-secondary/30 hover:border-primary/40 hover:bg-secondary/60"
+                }`}
+              >
+                <div
+                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
+                    selectedTokenType === type.id
+                      ? type.id === "fast-track"
+                        ? "bg-accent/10 text-accent"
+                        : "bg-primary/10 text-primary"
+                      : "bg-secondary text-muted-foreground"
+                  }`}
+                >
+                  <Icon className="h-6 w-6" />
+                </div>
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`text-base font-bold ${
+                        selectedTokenType === type.id
+                          ? type.id === "fast-track"
+                            ? "text-accent"
+                            : "text-primary"
+                          : "text-foreground"
+                      }`}
+                    >
+                      {type.label}
+                    </span>
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs font-bold ${
+                        selectedTokenType === type.id
+                          ? type.id === "fast-track"
+                            ? "bg-accent/10 text-accent"
+                            : "bg-primary/10 text-primary"
+                          : "bg-secondary text-muted-foreground"
+                      }`}
+                    >
+                      {"Type "}{type.typeNumber}
+                    </span>
+                  </div>
+                  <span className="mt-0.5 text-xs text-muted-foreground">{type.description}</span>
+                </div>
+              </button>
+            )
+          })}
         </div>
       </div>
 

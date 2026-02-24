@@ -10,12 +10,9 @@ import type { TokenData } from "@/components/token-card"
 import { TokenStats } from "@/components/token-stats"
 
 const SERVICE_LABELS: Record<string, string> = {
-  "new-license": "New License",
-  renewal: "Renewal",
-  duplicate: "Duplicate",
-  international: "International DL",
-  learner: "Learner Permit",
-  endorsement: "Endorsement",
+  learner: "Learner",
+  permanent: "Permanent",
+  international: "International",
 }
 
 export default function TokenIssuancePage() {
@@ -66,20 +63,29 @@ export default function TokenIssuancePage() {
   }, [startTimestamp])
 
   const handleIssueToken = useCallback(
-    (docType: "cnic" | "passport", docNumber: string, serviceId: string) => {
+    (
+      docType: "cnic" | "passport",
+      docNumber: string,
+      serviceId: string,
+      tokenType: string,
+      tokenTypeNumber: number
+    ) => {
       setIsIssuing(true)
 
       setTimeout(() => {
         const newCount = tokenCounter + 1
         setTokenCounter(newCount)
 
+        const prefix = tokenTypeNumber === 2 ? "FT" : "T"
         const now = new Date()
         const token: TokenData = {
-          tokenNumber: `T-${String(newCount).padStart(4, "0")}`,
+          tokenNumber: `${prefix}-${String(newCount).padStart(4, "0")}`,
           docType,
           docNumber,
           serviceType: SERVICE_LABELS[serviceId] || serviceId,
-          counter: "Counter 03",
+          tokenType,
+          tokenTypeNumber,
+          counter: tokenTypeNumber === 2 ? "Counter 01 (Priority)" : "Counter 03",
           issuedAt: now.toLocaleTimeString("en-US", {
             hour: "2-digit",
             minute: "2-digit",
