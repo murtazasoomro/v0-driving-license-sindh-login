@@ -15,43 +15,24 @@ export function LoginForm() {
   const [error, setError] = useState("")
   const router = useRouter()
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError("")
 
-    try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        setError(data.error || "Login failed")
-        setIsLoading(false)
-        return
-      }
-
-      // Store user + branch info in sessionStorage
-      sessionStorage.setItem("dls_user", data.user.fullName)
-      sessionStorage.setItem("dls_user_id", String(data.user.userId))
-      sessionStorage.setItem("dls_username", data.user.username)
-      sessionStorage.setItem("dls_role", data.user.role)
+    // Simple hardcoded credentials (admin / admin)
+    if (username === "admin" && password === "admin") {
+      sessionStorage.setItem("dls_user", "Administrator")
+      sessionStorage.setItem("dls_username", "admin")
       sessionStorage.setItem("dls_authenticated", "true")
-      // Branch info
-      sessionStorage.setItem("dls_branch_id", String(data.branch.branchId))
-      sessionStorage.setItem("dls_branch_name", data.branch.branchName)
-      sessionStorage.setItem("dls_branch_code", data.branch.branchCode)
-      sessionStorage.setItem("dls_branch_address", data.branch.address || "")
-      sessionStorage.setItem("dls_branch_phone", data.branch.phone || "")
-      sessionStorage.setItem("dls_branch_timings", data.branch.timings || "")
-
-      router.push("/session")
-    } catch {
-      setError("Cannot connect to server. Check your SQL Server is running.")
+      sessionStorage.setItem("dls_branch_name", "DLS Branch Office - Clifton")
+      sessionStorage.setItem("dls_branch_code", "BR-001")
+      sessionStorage.setItem("dls_branch_address", "Plot 12, Block 5, Clifton, Karachi")
+      sessionStorage.setItem("dls_branch_phone", "021-35831234")
+      sessionStorage.setItem("dls_branch_timings", "09:00 AM - 05:00 PM")
+      setTimeout(() => router.push("/session"), 800)
+    } else {
+      setError("Invalid username or password")
       setIsLoading(false)
     }
   }

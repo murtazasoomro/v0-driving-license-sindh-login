@@ -16,14 +16,13 @@ export default function SessionPage() {
   const [startTimestamp, setStartTimestamp] = useState<number | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
-  // Branch info from login
+  // Branch info
   const [branchName, setBranchName] = useState("")
   const [branchCode, setBranchCode] = useState("")
   const [branchAddress, setBranchAddress] = useState("")
   const [branchPhone, setBranchPhone] = useState("")
   const [branchTimings, setBranchTimings] = useState("")
 
-  // Check authentication and load branch info
   useEffect(() => {
     const auth = sessionStorage.getItem("dls_authenticated")
     const user = sessionStorage.getItem("dls_user")
@@ -43,7 +42,6 @@ export default function SessionPage() {
   // Duration timer
   useEffect(() => {
     if (!isSessionActive || !startTimestamp) return
-
     const interval = setInterval(() => {
       const elapsed = Math.floor((Date.now() - startTimestamp) / 1000)
       const hours = String(Math.floor(elapsed / 3600)).padStart(2, "0")
@@ -51,79 +49,33 @@ export default function SessionPage() {
       const seconds = String(elapsed % 60).padStart(2, "0")
       setSessionDuration(`${hours}:${minutes}:${seconds}`)
     }, 1000)
-
     return () => clearInterval(interval)
   }, [isSessionActive, startTimestamp])
 
-  const handleStartSession = useCallback(async () => {
-    const userId = sessionStorage.getItem("dls_user_id")
-    const branchId = sessionStorage.getItem("dls_branch_id")
+  const handleStartSession = useCallback(() => {
+    const now = new Date()
+    const timeStr = now.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    })
+    setSessionStartTime(timeStr)
+    setStartTimestamp(Date.now())
+    setIsSessionActive(true)
+    setSessionDuration("00:00:00")
 
-    try {
-      const res = await fetch("/api/sessions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: parseInt(userId || "0"),
-          branchId: parseInt(branchId || "0"),
-        }),
-      })
+    sessionStorage.setItem("dls_session_active", "true")
+    sessionStorage.setItem("dls_session_start", timeStr)
+    sessionStorage.setItem("dls_session_start_ts", String(Date.now()))
+    sessionStorage.setItem("dls_branch_name", branchName)
+    router.push("/token-issuance")
+  }, [router, branchName])
 
-      const data = await res.json()
-
-      if (data.success) {
-        const now = new Date()
-        const timeStr = now.toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: true,
-        })
-        setSessionStartTime(timeStr)
-        setStartTimestamp(Date.now())
-        setIsSessionActive(true)
-        setSessionDuration("00:00:00")
-
-        // Store session info
-        sessionStorage.setItem("dls_session_active", "true")
-        sessionStorage.setItem("dls_session_id", String(data.session.sessionId))
-        sessionStorage.setItem("dls_session_start", timeStr)
-        sessionStorage.setItem("dls_session_start_ts", String(Date.now()))
-
-        router.push("/token-issuance")
-      }
-    } catch {
-      // Fallback: still navigate even if API fails (for offline dev)
-      const now = new Date()
-      const timeStr = now.toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: true,
-      })
-      sessionStorage.setItem("dls_session_active", "true")
-      sessionStorage.setItem("dls_session_id", "0")
-      sessionStorage.setItem("dls_session_start", timeStr)
-      sessionStorage.setItem("dls_session_start_ts", String(Date.now()))
-      router.push("/token-issuance")
-    }
-  }, [router])
-
-  const handleCloseSession = useCallback(async () => {
-    const sessionId = sessionStorage.getItem("dls_session_id")
-    try {
-      await fetch("/api/sessions", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId: parseInt(sessionId || "0") }),
-      })
-    } catch {
-      // Ignore API failure
-    }
+  const handleCloseSession = useCallback(() => {
     setIsSessionActive(false)
     setStartTimestamp(null)
     sessionStorage.removeItem("dls_session_active")
-    sessionStorage.removeItem("dls_session_id")
   }, [])
 
   const handleLogout = useCallback(() => {
@@ -138,9 +90,7 @@ export default function SessionPage() {
     day: "numeric",
   })
 
-  if (!isAuthenticated) {
-    return null
-  }
+  if (!isAuthenticated) return null
 
   return (
     <div className="flex min-h-svh flex-col bg-background">
@@ -148,7 +98,6 @@ export default function SessionPage() {
 
       <main className="flex-1 px-4 py-8">
         <div className="mx-auto flex max-w-3xl flex-col gap-6">
-          {/* Welcome message */}
           <div>
             <h1 className="text-2xl font-bold text-foreground text-balance">
               {"Welcome back, "}{username}
@@ -158,7 +107,6 @@ export default function SessionPage() {
             </p>
           </div>
 
-          {/* Branch info from DB */}
           <BranchInfoCard
             branchName={branchName}
             branchCode={branchCode}
@@ -167,7 +115,6 @@ export default function SessionPage() {
             timings={branchTimings}
           />
 
-          {/* Session controls */}
           <SessionControls
             isSessionActive={isSessionActive}
             sessionStartTime={sessionStartTime}
@@ -179,7 +126,6 @@ export default function SessionPage() {
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="border-t border-border bg-card px-4 py-4">
         <div className="mx-auto flex max-w-5xl flex-col items-center gap-2">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">

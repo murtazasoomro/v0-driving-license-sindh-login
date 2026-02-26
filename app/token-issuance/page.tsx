@@ -32,11 +32,6 @@ export default function TokenIssuancePage() {
   const [tokenCounter, setTokenCounter] = useState(0)
   const [branchName, setBranchName] = useState("")
 
-  // Session info
-  const [sessionId, setSessionId] = useState(0)
-  const [branchId, setBranchId] = useState(0)
-  const [userId, setUserId] = useState(0)
-
   // Session timer
   const [sessionStart, setSessionStart] = useState("")
   const [sessionDuration, setSessionDuration] = useState("00:00:00")
@@ -50,9 +45,6 @@ export default function TokenIssuancePage() {
     const sessionStartTime = sessionStorage.getItem("dls_session_start")
     const sessionStartTs = sessionStorage.getItem("dls_session_start_ts")
     const branch = sessionStorage.getItem("dls_branch_name")
-    const sessId = sessionStorage.getItem("dls_session_id")
-    const brId = sessionStorage.getItem("dls_branch_id")
-    const usId = sessionStorage.getItem("dls_user_id")
 
     if (auth !== "true" || sessionActive !== "true") {
       router.replace("/")
@@ -63,9 +55,6 @@ export default function TokenIssuancePage() {
     setSessionStart(sessionStartTime || "--:--:--")
     setStartTimestamp(sessionStartTs ? Number(sessionStartTs) : Date.now())
     setBranchName(branch || "DLS Branch Office")
-    setSessionId(parseInt(sessId || "0"))
-    setBranchId(parseInt(brId || "0"))
-    setUserId(parseInt(usId || "0"))
     setIsAuthenticated(true)
   }, [router])
 
@@ -83,7 +72,7 @@ export default function TokenIssuancePage() {
   }, [startTimestamp])
 
   const handleIssueToken = useCallback(
-    async (
+    (
       docType: "cnic" | "passport",
       docNumber: string,
       serviceId: string,
@@ -92,77 +81,38 @@ export default function TokenIssuancePage() {
     ) => {
       setIsIssuing(true)
 
-      try {
-        const res = await fetch("/api/tokens", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            docType,
-            docNumber,
-            serviceType: serviceId,
-            tokenType,
-            tokenTypeNumber,
-            sessionId,
-            branchId,
-            userId,
+      setTimeout(() => {
+        const newCount = tokenCounter + 1
+        setTokenCounter(newCount)
+
+        const servicePrefix = SERVICE_PREFIX[serviceId] || "T"
+        const typeIndicator = tokenTypeNumber === 2 ? "F" : ""
+        const now = new Date()
+        const token: TokenData = {
+          tokenNumber: `${servicePrefix}${typeIndicator}-${String(newCount).padStart(4, "0")}`,
+          docType,
+          docNumber,
+          serviceType: SERVICE_LABELS[serviceId] || serviceId,
+          servicePrefix,
+          tokenType,
+          tokenTypeNumber,
+          branchName,
+          counter: tokenTypeNumber === 2 ? "Counter 01 (Priority)" : "Counter 03",
+          issuedAt: now.toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true,
           }),
-        })
-
-        const data = await res.json()
-
-        if (data.success) {
-          setTokenCounter((prev) => prev + 1)
-          setIssuedToken(data.token as TokenData)
-        } else {
-          // Fallback: generate token locally if API fails
-          generateLocalToken(docType, docNumber, serviceId, tokenType, tokenTypeNumber)
+          date: now.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }),
         }
-      } catch {
-        // Fallback: generate token locally if API fails
-        generateLocalToken(docType, docNumber, serviceId, tokenType, tokenTypeNumber)
-      }
-
-      setIsIssuing(false)
-    },
-    [sessionId, branchId, userId]
-  )
-
-  const generateLocalToken = useCallback(
-    (
-      docType: "cnic" | "passport",
-      docNumber: string,
-      serviceId: string,
-      tokenType: string,
-      tokenTypeNumber: number
-    ) => {
-      const newCount = tokenCounter + 1
-      setTokenCounter(newCount)
-      const servicePrefix = SERVICE_PREFIX[serviceId] || "T"
-      const typeIndicator = tokenTypeNumber === 2 ? "F" : ""
-      const now = new Date()
-      const token: TokenData = {
-        tokenNumber: `${servicePrefix}${typeIndicator}-${String(newCount).padStart(4, "0")}`,
-        docType,
-        docNumber,
-        serviceType: SERVICE_LABELS[serviceId] || serviceId,
-        servicePrefix,
-        tokenType,
-        tokenTypeNumber,
-        branchName,
-        counter: tokenTypeNumber === 2 ? "Counter 01 (Priority)" : "Counter 03",
-        issuedAt: now.toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: true,
-        }),
-        date: now.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }),
-      }
-      setIssuedToken(token)
+        setIssuedToken(token)
+        setIsIssuing(false)
+      }, 1000)
     },
     [tokenCounter, branchName]
   )
@@ -192,14 +142,12 @@ export default function TokenIssuancePage() {
 
       <main className="flex-1 px-4 py-6">
         <div className="mx-auto flex max-w-5xl flex-col gap-5">
-          {/* Session Stats Bar */}
           <TokenStats
             tokensIssued={tokenCounter}
             sessionStart={sessionStart}
             sessionDuration={sessionDuration}
           />
 
-          {/* Main Content */}
           {issuedToken ? (
             <div className="mx-auto w-full max-w-md">
               <TokenCard
@@ -214,7 +162,6 @@ export default function TokenIssuancePage() {
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="border-t border-border bg-card px-4 py-4">
         <div className="mx-auto flex max-w-5xl flex-col items-center gap-2">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
