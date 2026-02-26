@@ -156,7 +156,7 @@
 
   /* Hide everything by default */
   header, footer, nav, main,
-  .print\\:hidden,
+  [data-print-hide],
   button {
     display: none !important;
     visibility: hidden !important;
