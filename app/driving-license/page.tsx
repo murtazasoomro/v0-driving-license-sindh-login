@@ -33,6 +33,9 @@ const TRANSACTION_TILES: SettingsTile[] = [
   { id: "process-config-txn", label: "Process Configuration" },
   { id: "screening", label: "Screening" },
   { id: "registration", label: "Registration" },
+  { id: "medical-test", label: "Medical Test" },
+  { id: "physical-test", label: "Physical Test" },
+  { id: "book-license", label: "Book License" },
   { id: "payment-challan", label: "Payment Challan" },
   { id: "session", label: "Session" },
   { id: "ticket", label: "Ticket" },
@@ -147,6 +150,12 @@ export default function DrivingLicensePage() {
       router.push("/driving-license/registration")
     } else if (tileId === "academic-test-new") {
       router.push("/driving-license/academic-test")
+    } else if (tileId === "physical-test-new" || tileId === "physical-test") {
+      router.push("/driving-license/physical-test")
+    } else if (tileId === "medical-test") {
+      router.push("/driving-license/medical-test")
+    } else if (tileId === "book-license" || tileId === "book-license-approval") {
+      router.push("/driving-license/book-license")
     }
   }
 
