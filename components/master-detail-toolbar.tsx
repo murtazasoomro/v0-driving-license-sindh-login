@@ -1,6 +1,6 @@
 "use client"
 
-import { PlusCircle, Save, CircleDot, ChevronFirst, ChevronLast, ChevronsLeft, ChevronsRight, RefreshCw } from "lucide-react"
+import { PlusCircle, Save, CircleDot, Trash2, ChevronFirst, ChevronLast, ChevronsLeft, ChevronsRight, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface MasterDetailToolbarProps {
@@ -15,6 +15,8 @@ interface MasterDetailToolbarProps {
   onNext: () => void
   onLast: () => void
   onRefresh: () => void
+  onDelete?: () => void
+  showDelete?: boolean
 }
 
 export function MasterDetailToolbar({
@@ -29,6 +31,8 @@ export function MasterDetailToolbar({
   onNext,
   onLast,
   onRefresh,
+  onDelete,
+  showDelete = false,
 }: MasterDetailToolbarProps) {
   return (
     <div className="border-b border-border bg-card px-4 py-3">
@@ -46,6 +50,12 @@ export function MasterDetailToolbar({
           <CircleDot className="h-4 w-4" />
           {'Save & New'}
         </Button>
+        {showDelete && onDelete && (
+          <Button variant="outline" size="sm" onClick={onDelete} className="gap-1.5 border-destructive/30 text-destructive hover:bg-destructive/10">
+            <Trash2 className="h-4 w-4" />
+            Delete
+          </Button>
+        )}
 
         <div className="mx-1 h-6 w-px bg-border" />
 

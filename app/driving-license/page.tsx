@@ -143,6 +143,8 @@ export default function DrivingLicensePage() {
       router.push("/driving-license/fee-type")
     } else if (tileId === "process-configuration" || tileId === "process-config-txn") {
       router.push("/driving-license/process-configuration")
+    } else if (tileId === "registration") {
+      router.push("/driving-license/registration")
     }
   }
 
