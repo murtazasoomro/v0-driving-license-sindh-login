@@ -145,6 +145,8 @@ export default function DrivingLicensePage() {
       router.push("/driving-license/process-configuration")
     } else if (tileId === "registration") {
       router.push("/driving-license/registration")
+    } else if (tileId === "academic-test-new") {
+      router.push("/driving-license/academic-test")
     }
   }
 

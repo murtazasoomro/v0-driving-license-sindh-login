@@ -159,7 +159,7 @@ export function TokenCard({ token, onPrint, onNewToken }: TokenCardProps) {
       </div>
 
       {/* Action buttons - NEVER printed */}
-      <div className="flex w-[272px] gap-3 print:hidden">
+      <div className="flex w-[272px] gap-3" data-print-hide>
         <Button
           onClick={onPrint}
           className={`h-10 flex-1 gap-2 rounded-lg text-sm font-semibold ${
