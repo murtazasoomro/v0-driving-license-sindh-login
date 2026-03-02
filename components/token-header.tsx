@@ -13,19 +13,19 @@ interface TokenHeaderProps {
 export function TokenHeader({ username, onLogout, onBack }: TokenHeaderProps) {
   return (
     <header className="border-b border-border bg-card shadow-sm">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-3">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-3 py-2 sm:px-4 sm:py-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <Button
             variant="ghost"
             size="sm"
             onClick={onBack}
-            className="gap-1.5 text-muted-foreground hover:text-foreground"
+            className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground sm:h-auto sm:w-auto sm:gap-1.5 sm:px-3 sm:py-2"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">Back</span>
+            <span className="sr-only sm:not-sr-only">Back</span>
           </Button>
-          <div className="h-6 w-px bg-border" />
-          <div className="relative h-9 w-9 overflow-hidden rounded-lg shadow-sm">
+          <div className="hidden h-6 w-px bg-border sm:block" />
+          <div className="relative h-7 w-7 overflow-hidden rounded-lg shadow-sm sm:h-9 sm:w-9">
             <Image
               src="/images/logo-dls.png"
               alt="DLS Logo"
@@ -35,15 +35,16 @@ export function TokenHeader({ username, onLogout, onBack }: TokenHeaderProps) {
             />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-bold leading-tight text-foreground">
-              Driving License Sindh
+            <span className="text-xs font-bold leading-tight text-foreground sm:text-sm">
+              <span className="hidden sm:inline">Driving License Sindh</span>
+              <span className="sm:hidden">DLS</span>
             </span>
-            <span className="text-xs text-muted-foreground">Token Issuance</span>
+            <span className="text-[10px] text-muted-foreground sm:text-xs">Token Issuance</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="hidden items-center gap-2 sm:flex">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="hidden items-center gap-2 md:flex">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
               {username.charAt(0).toUpperCase()}
             </div>
@@ -53,10 +54,10 @@ export function TokenHeader({ username, onLogout, onBack }: TokenHeaderProps) {
             variant="outline"
             size="sm"
             onClick={onLogout}
-            className="gap-2 text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
+            className="h-7 gap-1.5 border-destructive/30 px-2 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive sm:h-8 sm:gap-2 sm:px-3"
           >
             <LogOut className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Logout</span>
+            <span className="sr-only sm:not-sr-only">Logout</span>
           </Button>
         </div>
       </div>

@@ -6,6 +6,17 @@ import './globals.css'
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#1a1a2e' },
+  ],
+}
+
 export const metadata: Metadata = {
   title: 'Driving License Sindh - DLS Portal',
   description: 'Official Driving License Sindh (DLS) portal - Sindh Police',

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Car, Settings, FileQuestion, ArrowLeftRight, FileBarChart, RefreshCw } from "lucide-react"
+import { Car, Settings, FileQuestion, ArrowLeftRight, FileBarChart, RefreshCw, Activity } from "lucide-react"
 import { SetupPageHeader } from "@/components/setup-page-header"
 import { SettingsTileGrid, type SettingsTile } from "@/components/settings-tile-grid"
 
@@ -169,6 +169,10 @@ export default function DrivingLicensePage() {
       router.push("/driving-license/dispatch-booking")
     } else if (tileId === "license-printing" || tileId === "license-printing-2") {
       router.push("/driving-license/license-printing")
+    } else if (tileId === "screening" || tileId === "screening-without-token") {
+      router.push("/driving-license/screening")
+    } else if (tileId === "payment-challan" || tileId === "payment") {
+      router.push("/driving-license/payment-challan")
     }
   }
 
@@ -194,22 +198,32 @@ export default function DrivingLicensePage() {
         onBack={handleBack}
       />
 
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6">
+      <main className="mx-auto w-full max-w-7xl flex-1 px-3 py-4 sm:px-4 sm:py-6">
         {/* Page Title */}
-        <div className="mb-6 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-            <Car className="h-5 w-5 text-primary" />
+        <div className="mb-4 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 sm:h-10 sm:w-10">
+              <Car className="h-4 w-4 text-primary sm:h-5 sm:w-5" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-foreground sm:text-xl">Driving License</h1>
+              <p className="text-xs text-muted-foreground sm:text-sm">
+                Configuration, transactions, and reporting
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-bold text-foreground">Driving License</h1>
-            <p className="text-sm text-muted-foreground">
-              License configuration, transactions, and reporting
-            </p>
-          </div>
+          <button
+            type="button"
+            onClick={() => router.push("/driving-license/process-flow")}
+            className="flex items-center gap-2 self-start rounded-lg bg-primary px-3 py-2 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:text-sm"
+          >
+            <Activity className="h-4 w-4" />
+            Process Flow
+          </button>
         </div>
 
-        {/* Tab Bar - matching the teal style from screenshots */}
-        <div className="mb-6 flex flex-wrap gap-1 rounded-lg border border-border bg-card p-1 shadow-sm">
+        {/* Tab Bar */}
+        <div className="mb-4 flex gap-1 overflow-x-auto rounded-lg border border-border bg-card p-1 shadow-sm sm:mb-6 sm:flex-wrap">
           {TABS.map((tab) => {
             const Icon = tab.icon
             const isActive = activeTab === tab.id
@@ -218,7 +232,7 @@ export default function DrivingLicensePage() {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex flex-1 flex-col items-center gap-1 rounded-md px-3 py-3 text-xs font-semibold transition-all sm:flex-row sm:gap-2 sm:text-sm ${
+                className={`flex shrink-0 flex-col items-center gap-1 rounded-md px-3 py-2.5 text-[11px] font-semibold transition-all sm:flex-1 sm:flex-row sm:gap-2 sm:px-3 sm:py-3 sm:text-sm ${
                   isActive
                     ? "bg-[#2a8f7a] text-[#f7fafc] shadow-md"
                     : "text-muted-foreground hover:bg-secondary hover:text-foreground"

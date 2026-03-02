@@ -15,18 +15,18 @@ interface SettingsTileGridProps {
 
 export function SettingsTileGrid({ tiles }: SettingsTileGridProps) {
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
       {tiles.map((tile) => (
         <button
           key={tile.id}
           type="button"
           onClick={tile.onClick}
-          className="group flex items-center gap-3 rounded-md border-l-4 border-l-[#2a8f7a] bg-[#2d3748] px-4 py-5 text-left transition-all hover:bg-[#374151] hover:shadow-lg active:scale-[0.98]"
+          className="group flex items-center gap-3 rounded-md border-l-4 border-l-primary bg-secondary px-3 py-4 text-left transition-all hover:bg-secondary/80 hover:shadow-lg active:scale-[0.98] sm:px-4 sm:py-5"
         >
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center">
-            <FileText className="h-6 w-6 text-[#e2e8f0]" />
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center sm:h-8 sm:w-8">
+            <FileText className="h-5 w-5 text-muted-foreground group-hover:text-foreground sm:h-6 sm:w-6" />
           </div>
-          <span className="text-sm font-semibold leading-tight text-[#e2e8f0] group-hover:text-[#f7fafc]">
+          <span className="truncate text-sm font-semibold leading-tight text-foreground">
             {tile.label}
           </span>
         </button>
