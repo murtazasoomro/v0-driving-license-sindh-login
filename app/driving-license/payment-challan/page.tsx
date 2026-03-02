@@ -31,12 +31,16 @@ interface FeeItem {
 interface PaymentRecord {
   challanNo: string
   applicationId: string
+  applicationNo: string
+  applicantNo: string
   applicantName: string
   fatherName: string
   cnic: string
   feeType: string
   licenseType: string
+  appType: string
   licenseCategory: string
+  branchName: string
   totalAmount: number
   paymentDate: string
   paymentStatus: "Pending" | "Paid" | "Cancelled" | "Refunded"
@@ -56,12 +60,16 @@ const DEFAULT_FEES: FeeItem[] = [
 const EMPTY_RECORD: PaymentRecord = {
   challanNo: "",
   applicationId: "",
+  applicationNo: "",
+  applicantNo: "",
   applicantName: "",
   fatherName: "",
   cnic: "",
   feeType: "License Fee",
   licenseType: "",
+  appType: "",
   licenseCategory: "",
+  branchName: "",
   totalAmount: 0,
   paymentDate: new Date().toLocaleDateString("en-US"),
   paymentStatus: "Pending",
@@ -102,6 +110,12 @@ function ChallanCopy({
         <p className="text-[10px] font-semibold">Driving License Branch - Sindh Police</p>
         <p className="text-[9px] text-muted-foreground">Payment Challan / Fee Receipt</p>
       </div>
+      {/* Branch Name */}
+      {record.branchName && (
+        <div className="border-b border-foreground/80 px-2 py-1 text-center">
+          <p className="text-[9px] font-semibold">{record.branchName}</p>
+        </div>
+      )}
       {/* Info */}
       <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 border-b border-foreground/80 px-2 py-1.5 text-[9px]">
         <div className="flex gap-1">
@@ -111,6 +125,14 @@ function ChallanCopy({
         <div className="flex gap-1">
           <span className="font-semibold">Date:</span>
           <span>{record.paymentDate}</span>
+        </div>
+        <div className="flex gap-1">
+          <span className="font-semibold">Applicant No:</span>
+          <span className="font-mono">{record.applicantNo || "---"}</span>
+        </div>
+        <div className="flex gap-1">
+          <span className="font-semibold">Application No:</span>
+          <span className="font-mono">{record.applicationNo || "---"}</span>
         </div>
         <div className="col-span-2 flex gap-1">
           <span className="font-semibold">Name:</span>
@@ -125,8 +147,8 @@ function ChallanCopy({
           <span className="font-mono">{record.cnic || "---"}</span>
         </div>
         <div className="flex gap-1">
-          <span className="font-semibold">App ID:</span>
-          <span className="font-mono">{record.applicationId || "---"}</span>
+          <span className="font-semibold">App Type:</span>
+          <span>{record.appType || "---"}</span>
         </div>
         <div className="flex gap-1">
           <span className="font-semibold">License Type:</span>
@@ -286,15 +308,18 @@ export default function PaymentChallanPage() {
             <div class="govt-header">
               <div class="title">Government of Sindh</div>
               <div class="subtitle">Driving License Branch - Sindh Police</div>
+              ${record.branchName ? `<div class="subtitle" style="font-size:8px">${record.branchName}</div>` : ""}
               <div class="desc">Payment Challan / Fee Receipt</div>
             </div>
             <div class="info">
               <div><span class="label">Challan No: </span><span class="mono">${record.challanNo || "---"}</span></div>
               <div><span class="label">Date: </span>${record.paymentDate}</div>
+              <div><span class="label">Applicant No: </span><span class="mono">${record.applicantNo || "---"}</span></div>
+              <div><span class="label">Application No: </span><span class="mono">${record.applicationNo || "---"}</span></div>
               <div class="full"><span class="label">Name: </span>${record.applicantName || "---"}</div>
               <div class="full"><span class="label">Father's Name: </span>${record.fatherName || "---"}</div>
               <div><span class="label">CNIC: </span><span class="mono">${record.cnic || "---"}</span></div>
-              <div><span class="label">App ID: </span><span class="mono">${record.applicationId || "---"}</span></div>
+              <div><span class="label">App Type: </span>${record.appType || "---"}</div>
               <div><span class="label">License Type: </span>${record.licenseType || "---"}</div>
               <div><span class="label">Category: </span>${record.licenseCategory || "---"}</div>
             </div>
@@ -385,6 +410,14 @@ export default function PaymentChallanPage() {
                 <Input value={record.fatherName} onChange={e => updateField("fatherName", e.target.value)} className="h-8 text-xs" />
               </div>
               <div className="flex flex-col gap-1">
+                <Label className="text-[11px] text-muted-foreground">Application No</Label>
+                <Input value={record.applicationNo} onChange={e => updateField("applicationNo", e.target.value)} className="h-8 text-xs font-mono" />
+              </div>
+              <div className="flex flex-col gap-1">
+                <Label className="text-[11px] text-muted-foreground">Applicant No</Label>
+                <Input value={record.applicantNo} onChange={e => updateField("applicantNo", e.target.value)} className="h-8 text-xs font-mono" />
+              </div>
+              <div className="flex flex-col gap-1">
                 <Label className="text-[11px] text-muted-foreground">CNIC</Label>
                 <Input
                   value={record.cnic}
@@ -419,6 +452,27 @@ export default function PaymentChallanPage() {
                   <option value="Duplicate">Duplicate</option>
                   <option value="Renewal">Renewal</option>
                 </select>
+              </div>
+              <div className="flex flex-col gap-1">
+                <Label className="text-[11px] text-muted-foreground">App Type</Label>
+                <select
+                  value={record.appType}
+                  onChange={e => updateField("appType", e.target.value)}
+                  className="h-8 rounded-md border border-input bg-background px-2 text-xs text-foreground"
+                >
+                  <option value="">Select</option>
+                  <option value="New">New</option>
+                  <option value="Renewal">Renewal</option>
+                  <option value="Duplicate">Duplicate</option>
+                  <option value="Addition">Addition of Category</option>
+                </select>
+              </div>
+              <div className="flex flex-col gap-1">
+                <Label className="text-[11px] text-muted-foreground">Branch Name</Label>
+                <div className="flex gap-1">
+                  <Input value={record.branchName} onChange={e => updateField("branchName", e.target.value)} className="h-8 text-xs" placeholder="Business Unit" />
+                  <Button variant="outline" size="icon" className="h-8 w-8 shrink-0"><Search className="h-3 w-3" /></Button>
+                </div>
               </div>
               <div className="flex flex-col gap-1">
                 <Label className="text-[11px] text-muted-foreground">Status</Label>
