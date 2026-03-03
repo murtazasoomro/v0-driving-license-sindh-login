@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState, useRef, useCallback } from "react"
-import { useRouter } from "next/navigation"
+import { Suspense, useEffect, useState, useRef, useCallback } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { MasterDetailToolbar } from "@/components/master-detail-toolbar"
 import { SetupPageHeader } from "@/components/setup-page-header"
 import { Input } from "@/components/ui/input"
@@ -131,15 +131,23 @@ const LICENSE_CATEGORIES = [
   { line: 13, name: "PSV" },
 ]
 
-export default function RegistrationPage() {
+export default function RegistrationPageWrapper() {
+  return (
+    <Suspense fallback={<div className="flex min-h-svh items-center justify-center bg-background"><div className="text-sm text-muted-foreground">Loading...</div></div>}>
+      <RegistrationPage />
+    </Suspense>
+  )
+}
+
+function RegistrationPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [username, setUsername] = useState("")
 
-  // Token management
+  // Token management -- tokens come from Token Issuance page via URL params or sessionStorage
   const [servingToken, setServingToken] = useState<string | null>(null)
-  const [tokenQueue] = useState<string[]>(["R-001", "R-002", "R-003", "R-004", "R-005"])
-  const [queueIndex, setQueueIndex] = useState(0)
+  const [servingCnic, setServingCnic] = useState<string | null>(null)
   const [tokenStatus, setTokenStatus] = useState<"idle" | "serving" | "skipped">("idle")
 
   // Form state
@@ -161,7 +169,32 @@ export default function RegistrationPage() {
     if (auth !== "true") { router.replace("/"); return }
     setUsername(user || "Officer")
     setIsAuthenticated(true)
-  }, [router])
+
+    // Pre-fill from URL params (from Token Issuance "Register" button)
+    const paramCnic = searchParams.get("cnic")
+    const paramToken = searchParams.get("token")
+    if (paramCnic) {
+      setServingCnic(paramCnic)
+      setForm(prev => ({ ...prev, cnic: paramCnic }))
+      setTokenStatus("serving")
+    }
+    if (paramToken) {
+      setServingToken(paramToken)
+    }
+    // Also check sessionStorage for current token
+    if (!paramToken) {
+      const savedToken = sessionStorage.getItem("dls_current_token")
+      if (savedToken) {
+        try {
+          const t = JSON.parse(savedToken)
+          setServingToken(t.tokenNumber)
+          setServingCnic(t.cnic)
+          setForm(prev => ({ ...prev, cnic: t.cnic }))
+          setTokenStatus("serving")
+        } catch { /* ignore */ }
+      }
+    }
+  }, [router, searchParams])
 
   // Cleanup camera on unmount
   useEffect(() => {
@@ -222,24 +255,23 @@ export default function RegistrationPage() {
 
   // ===== Token functions =====
   const handleNextToken = () => {
-    if (queueIndex < tokenQueue.length) {
-      setServingToken(tokenQueue[queueIndex])
-      setQueueIndex(prev => prev + 1)
-      setTokenStatus("serving")
-      handleNew()
-    }
+    // Go back to Token Issuance to call the next token
+    router.push("/token-issuance")
   }
 
   const handleCallToken = () => {
-    if (servingToken) {
-      setTokenStatus("serving")
-    }
+    // Navigate to Token Issuance to pick a token from the queue
+    router.push("/token-issuance")
   }
 
   const handleSkipToken = () => {
     if (servingToken) {
       setTokenStatus("skipped")
       setServingToken(null)
+      setServingCnic(null)
+      sessionStorage.removeItem("dls_current_token")
+      // Clear the CNIC from form
+      setForm(prev => ({ ...prev, cnic: "" }))
     }
   }
 
