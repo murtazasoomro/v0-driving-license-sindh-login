@@ -69,8 +69,7 @@ export default function SessionPage() {
     sessionStorage.setItem("dls_session_start", timeStr)
     sessionStorage.setItem("dls_session_start_ts", String(Date.now()))
     sessionStorage.setItem("dls_branch_name", branchName)
-    router.push("/token-issuance")
-  }, [router, branchName])
+  }, [branchName])
 
   const handleCloseSession = useCallback(() => {
     setIsSessionActive(false)

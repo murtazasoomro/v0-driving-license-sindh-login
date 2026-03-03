@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import { Shield } from "lucide-react"
+import { Shield, ArrowRight, LayoutGrid } from "lucide-react"
 import { TokenHeader } from "@/components/token-header"
 import { TokenIssuanceForm } from "@/components/token-issuance-form"
 import { TokenCard } from "@/components/token-card"
 import type { TokenData } from "@/components/token-card"
 import { TokenStats } from "@/components/token-stats"
+import { Button } from "@/components/ui/button"
 
 const SERVICE_LABELS: Record<string, string> = {
   learner: "Learner",
@@ -204,6 +205,51 @@ export default function TokenIssuancePage() {
             sessionStart={sessionStart}
             sessionDuration={sessionDuration}
           />
+
+          {/* Quick Navigation to Process Steps */}
+          <div className="flex flex-col gap-2 rounded-xl border border-border bg-card p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-4">
+            <div className="flex items-center gap-2">
+              <LayoutGrid className="h-4 w-4 text-primary" />
+              <span className="text-xs font-medium text-muted-foreground sm:text-sm">
+                After issuing tokens, proceed to process steps:
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.push("/driving-license")}
+                className="h-8 gap-1.5 text-xs"
+              >
+                <LayoutGrid className="h-3.5 w-3.5" />
+                DL Module
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => router.push("/driving-license/registration")}
+                className="h-8 gap-1.5 text-xs"
+              >
+                Registration
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.push("/driving-license/screening")}
+                className="h-8 gap-1.5 text-xs"
+              >
+                Screening
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.push("/driving-license/process-flow")}
+                className="h-8 gap-1.5 text-xs"
+              >
+                Process Flow
+              </Button>
+            </div>
+          </div>
 
           {issuedToken ? (
             <div className="mx-auto w-full max-w-md">
