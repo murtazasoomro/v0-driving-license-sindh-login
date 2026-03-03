@@ -330,7 +330,6 @@ function RegistrationPage() {
             <Button
               size="sm"
               onClick={handleNextToken}
-              disabled={queueIndex >= tokenQueue.length}
               className="h-8 gap-1.5 bg-emerald-600 text-xs hover:bg-emerald-700"
             >
               <PhoneForwarded className="h-3.5 w-3.5" />
@@ -377,7 +376,7 @@ function RegistrationPage() {
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5">
               <div className="h-2 w-2 rounded-full bg-emerald-500" />
-              <span className="text-[10px] text-muted-foreground">Queue: {tokenQueue.length - queueIndex} pending</span>
+              <span className="text-[10px] text-muted-foreground">{servingCnic ? `CNIC: ${servingCnic}` : "No token called"}</span>
             </div>
             {tokenStatus === "serving" && (
               <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">SERVING</span>
