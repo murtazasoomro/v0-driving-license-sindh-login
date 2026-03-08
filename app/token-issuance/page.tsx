@@ -213,7 +213,8 @@ export default function TokenIssuancePage() {
 </style></head><body>
 <div class="receipt">
   <div class="center" style="padding:8px 0 4px">
-    <div style="font-size:10px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;margin-top:3px">Driving License Sindh</div>
+    <img src="/images/sindh-police-logo.png" width="50" height="50" style="object-fit:contain;margin:0 auto 4px" />
+    <div style="font-size:10px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase">Driving License Sindh</div>
     <div style="font-size:8px;color:#666;margin-top:1px">${t.branchName}</div>
   </div>
   <div class="sep"></div>
