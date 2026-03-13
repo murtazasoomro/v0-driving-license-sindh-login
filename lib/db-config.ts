@@ -20,9 +20,9 @@
 
 export const DB_CONFIG = {
   /** User-management / UT database */
-  UT_DATABASE: "ESSUT_Nazimabad",
+  UT_DATABASE: "ESSUT",
   /** Production / DL operations database */
-  PRODUCTION_DATABASE: "iXSEPolice_Nazimabad",
+  PRODUCTION_DATABASE: "EPolice",
   /** Default schema */
   SCHEMA: "dbo",
 } as const
