@@ -1,1 +1,84 @@
-node_modules
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Production build
+/build
+/dist
+.next
+/out
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Coverage directory used by testing tools
+/coverage
+
+# Cache
+.cache/
+.parcel-cache/
+
+# Optional REPL history
+.node_repl_history
+
+# ESLint cache
+.eslintcache
+
+# TypeScript
+*.tsbuildinfo
+
+# Vite specific
+vite.config.ts.timestamp-*
+vite.config.js.timestamp-*
+
+# Debug files
+*.log
+
+# Local env files
+.env*
+
+# Temporary files
+tmp/
+temp/
+
+# Package lock files (optional - choose one)
+# Uncomment based on your package manager
+
+# npm
+# package-lock.json
+
+# yarn
+# yarn.lock
+
+# pnpm
+# pnpm-lock.yaml
