@@ -360,23 +360,26 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2f$mssql$2e$ts__$5
 async function POST(request) {
     try {
         const { username, password } = await request.json();
-        if (!username || !password) {
+        const normalizedUsername = String(username || "").trim();
+        const plainPassword = String(password || "").trim();
+        if (!normalizedUsername || !plainPassword) {
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
                 error: "Username and password are required"
             }, {
                 status: 400
             });
         }
-        // Query user from database
         const users = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2f$mssql$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__$3c$locals$3e$__["query"])(`SELECT userid, username, firstname, lastname, email, roleid, entityid, busunitid, siteid, isactive
-       FROM utusers 
-       WHERE username = @username AND password = @password AND ISNULL(utblock, 0) = 0`, {
-            username,
-            password
+       FROM utusers
+       WHERE username = @username
+         AND password = @password
+         AND ISNULL(utblock, 0) = 0`, {
+            username: normalizedUsername,
+            password: plainPassword
         });
         if (users.length === 0) {
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-                error: "Invalid username or password"
+                error: "Invalid credentials"
             }, {
                 status: 401
             });
@@ -389,10 +392,11 @@ async function POST(request) {
                 status: 403
             });
         }
-        // Get business unit name for branch display
         let branchName = "Sindh Police - DL Branch";
         if (user.busunitid) {
-            const units = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2f$mssql$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__$3c$locals$3e$__["query"])(`SELECT busunitstxt FROM BusinessUnit WHERE busunitid = @busunitid`, {
+            const units = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2f$mssql$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__$3c$locals$3e$__["query"])(`SELECT busunitstxt
+         FROM BusinessUnit
+         WHERE busunitid = @busunitid`, {
                 busunitid: user.busunitid
             });
             if (units.length > 0) {

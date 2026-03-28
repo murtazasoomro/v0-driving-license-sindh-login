@@ -1,6 +1,6 @@
 {
-  "/api/auth/login/route": "app/api/auth/login/route.js",
   "/driving-license/registration/page": "app/driving-license/registration/page.js",
   "/page": "app/page.js",
-  "/session/page": "app/session/page.js"
+  "/session/page": "app/session/page.js",
+  "/token-issuance/page": "app/token-issuance/page.js"
 }
